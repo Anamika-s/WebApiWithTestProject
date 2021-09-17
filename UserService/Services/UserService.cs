@@ -6,16 +6,57 @@ namespace UserService.Services
 {
     //Inherit the respective interface and implement the methods in 
     // this class i.e UserService by inheriting IUserService
-    public class UserService
+    public class UserService:IUserService
     {
-        /*
+        private IUserRepository ur;  /*
          * UserRepository should  be injected through constructor injection. 
          * Please note that we should not create USerRepository object using the new keyword
          */
         
         public UserService(IUserRepository userRepository)
         {
+            ur = userRepository;
+        }
 
+        public async Task<bool> AddUser(UserProfile user)
+        {
+            var u = ur.GetUser(user.UserId).Result;
+            if (u != null)
+            {
+                throw new UserAlreadyExistsException($"{user.UserId} is already in use");
+            }
+            return await ur.AddUser(user);
+        }
+
+        public async Task<bool> DeleteUser(string userId)
+        {
+            var u = ur.GetUser(userId).Result;
+            if (u == null)
+            {
+                throw new UserNotFoundException($"This user id doesn't exist");
+            }
+            return await ur.DeleteUser(userId);
+        }
+    
+
+        public async Task<UserProfile> GetUser(string userId)
+        {
+           var r = ur.GetUser(userId);
+           if (r.Result == null)
+           {
+             throw new UserNotFoundException($"This user id doesn't exist");
+           }
+         return await r;
+        }
+
+        public async Task<bool> UpdateUser(string userId, UserProfile user)
+        {
+            var r = ur.UpdateUser(user);
+            if (!r.Result)
+            {
+                throw new UserNotFoundException($"This user id doesn't exist");
+            }
+            return await r;
         }
         //Implement the methods of interface Asynchronously.
 

@@ -16,14 +16,35 @@ namespace UserService.Controllers
      */
     public class UserController : ControllerBase
     {
+        private IUserService us;
         public UserController(IUserService userService)
         {
-
+            us = userService;
         }
 
         /* Implement HttpVerbs and its Functionality asynchronously*/
 
-        /*
+        [HttpGet]
+        [Route("/api/user/{userId}")]
+        public async Task<IActionResult> Get(string userId)
+        {
+            try
+            {
+                return Ok(await us.GetUser(userId));
+            }
+            catch (UserNotFoundException nnf)
+            {
+                return NotFound(nnf.Message);
+            }
+            catch (UserAlreadyExistsException nnf)
+            {
+                return Conflict(nnf.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }  /*
          * Define a handler method which will get us the user by a userId.
          * This handler method should return any one of the status messages basis on
          * different situations: 
@@ -31,7 +52,27 @@ namespace UserService.Controllers
          * This handler method should map to the URL "/api/user/{userId}" using HTTP GET method
          */
 
-        /*
+        [HttpPost]
+        [Route("/api/user")]
+        public async Task<IActionResult> Post([FromBody] UserProfile user)
+        {
+            try
+            {
+                return Created("", await us.AddUser(user));
+            }
+            catch (UserNotFoundException nnf)
+            {
+                return NotFound(nnf.Message);
+            }
+            catch (UserAlreadyExistsException nnf)
+            {
+                return Conflict(nnf.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }  /*
         * Define a handler method which will create a specific UserProfile by reading the
         * Serialized object from request body and save the user details in a User table
         * in the database.
@@ -45,7 +86,27 @@ namespace UserService.Controllers
         * This handler method should map to the URL "/api/user" using HTTP POST method
         */
 
-
+        [HttpPut]
+        [Route("/api/user/{userId}")]
+        public async Task<IActionResult> Put(string userId, UserProfile user)
+        {
+            try
+            {
+                return Ok(await us.UpdateUser(userId, user));
+            }
+            catch (UserNotFoundException nnf)
+            {
+                return NotFound(nnf.Message);
+            }
+            catch (UserAlreadyExistsException nnf)
+            {
+                return Conflict(nnf.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
         /*
         * Define a handler method which will update a specific user by reading the
         * Serialized object from request body and save the updated user details in a
@@ -57,7 +118,27 @@ namespace UserService.Controllers
         * This handler method should map to the URL "/api/user/{userId}" using HTTP PUT method.
         */
 
-        /*
+        [HttpDelete]
+        [Route("/api/user/{userId}")]
+        public async Task<IActionResult> Delete(string userId)
+        {
+            try
+            {
+                return Ok(await us.DeleteUser(userId));
+            }
+            catch (UserNotFoundException nnf)
+            {
+                return NotFound(nnf.Message);
+            }
+            catch (UserAlreadyExistsException nnf)
+            {
+                return Conflict(nnf.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        } /*
              * Define a handler method which will delete a specified UserProfile details from a database.
              * This handler method should return any one of the status messages basis on
              * different situations: 

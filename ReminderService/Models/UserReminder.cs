@@ -4,6 +4,10 @@ namespace ReminderService.Models
 {
     public class Reminder
     {
+        [BsonId]
+        public string UserId { get; set; }
+        public string Email { get; set; }
+        public List<ReminderSchedule> NewsReminders { get; set; }
         /*
       * This class should have a property called UserId which returns string data type and 
       * the field userId should be annotated with [BsonId],
